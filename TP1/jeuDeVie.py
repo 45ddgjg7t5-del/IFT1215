@@ -1,79 +1,113 @@
 #J.A / 4.11 / Jeu de la vie
+taille_g = struct(nx=20, ny=20, dim=10)
 
 
-def creer(taille_g):                                 
-    taille_g = struct(nx=20, ny=20, dim=10)  #nx: cases sur axe x, ny: cases y
-    grille = []                                    #dim: nb de pixel/case
 
-    for y in range(taille_g.ny):                   
-        ligne = []                                      #crée la grille 
+def creer(taille_g):
+    tab = []
+    for y in range(taille_g.ny):
+        ligne = []
         for x in range(taille_g.nx):
             ligne.append(0)
+        tab.append(ligne)
 
-        grille.append(ligne)
-
-    return grille
+    return struct(grille=tab, nx=taille_g.nx, ny=taille_g.ny, dim=taille_g.dim)
 
 
-def init(grille):                   
-    grille = creer(1)
-    
-    ran = random() * 0.4 + 0.1     #choisi aléatoirement 10-50% cases vivantes
-    case_vivante = round(ran * 400)     #determine le nb de cases vivantes
-    
+def init(g):
+    nb_cases = g.nx * g.ny
+    pourcentage = 0.4 * random() + 0.1
+    nb_vivantes = round(pourcentage * nb_cases)
+
     compteur = 0
-    
-    while compteur < case_vivante:
-        x = int(random() * 20)                 #choisi une case aléatoire
-        y = int(random() * 20)
-        
-        if grille[y][x] == 0:              #si morte, la rend vivante
-            grille[y][x] = 1
+    while compteur < nb_vivantes:
+        x = int(random() * g.nx)
+        y = int(random() * g.ny)
+
+        if g.grille[y][x] == 0:
+            g.grille[y][x] = 1
             compteur += 1
-    
-    print("Cases vivantes calculées:",case_vivante)   #TEST, À ENLEVER
-    print("Cases vivantes réelles:",compteur)
-    return grille
 
-           
-def dessiner(grille):
-    set_screen_mode(200, 200)                            #20x20 cases de 10px
-
-    for y in range(len(grille)):                #trace le contour des cases 
-        for x in range(len(grille[y])):
-            pu()
-            goto(x * 10, -y * 10)             #coin de depart chaque pixel
-            pd()                #-y car y de notre grille augmente vers le bas
-            fd(10)                            
-            rt(90)
-            fd(10)
-            rt(90)
-            fd(10)
-            rt(90)
-            fd(10)
-            rt(90)
-
-            if grille[y][x] == 1:              #si case vivante: fill en rouge
-                for py in range(1, 10):     #part du coins et fill en balayant
-                    for px in range(1, 10):              #chaque pixel
-                        set_pixel(x * 10 + px, y * 10 + py, "#f00")
-            
-            else:                              #si case morte: fill en blanc
-                for py in range(1, 10):
-                    for px in range(1, 10):
-                        set_pixel(x * 10 + px, y * 10 + py, "#fff")
+    return g
 
 
-grille = init(1)
-dessiner(grille)
-
-for ligne in grille:
-    print(ligne)
-
-    
+def lignes(nbLignes, pas, largeur):
+    for _ in range(nbLignes):
+        fd(largeur)
+        positionner(-largeur, pas)
+    positionner(0, -pas * nbLignes)
 
 
-    
+def positionner(x, y):
+    pu(); fd(x); lt(90); fd(y); rt(90); pd()
 
-    
-  
+
+def quadrillage(nx, ny, pas):
+    lignes(ny + 1, pas, pas * nx)
+    lt(90)
+    lignes(nx + 1, -pas, pas * ny)
+    rt(90)
+
+
+def dessiner(g):
+    clear()
+    ht()
+
+    dim = g.dim
+    x0 = -g.nx * dim / 2
+    y0 = -g.ny * dim / 2
+
+    pencolor(1, 0, 0)
+    pensize(dim)
+    for y in range(g.ny):
+        for x in range(g.nx):
+            if g.grille[y][x] == 1:
+                pu()
+                goto(x0 + x*dim, y0 + (g.ny - 1 - y)*dim + dim/2)
+                pd()
+                fd(dim)
+
+    pencolor(0, 0, 0)
+    pensize(1)
+    pu()
+    goto(x0, y0)
+    pd()
+    quadrillage(g.nx, g.ny, dim)
+
+
+def suivant(g):
+    futur = creer(struct(nx=g.nx, ny=g.ny, dim=g.dim))
+
+    for y in range(g.ny):
+        for x in range(g.nx):
+            voisins = 0
+            for dy in range(-1, 2):
+                for dx in range(-1, 2):
+                    if dx != 0 or dy != 0:
+                        yv = y + dy
+                        xv = x + dx
+                        if 0 <= yv < g.ny and 0 <= xv < g.nx:
+                            voisins += g.grille[yv][xv]
+
+            if g.grille[y][x] == 1:
+                if voisins == 2 or voisins == 3:
+                    futur.grille[y][x] = 1
+            else:
+                if voisins == 3:
+                    futur.grille[y][x] = 1
+
+    return futur
+
+
+def jouer(taille_g, f_aff):
+    g = creer(taille_g)
+    g = init(g) 
+
+    while True:
+        dessiner(g)
+        futur = suivant(g)
+        g = futur
+        sleep(1 / f_aff)
+
+
+jouer(taille_g, 10)
