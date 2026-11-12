@@ -16,68 +16,75 @@ def creer(taille_g):  #taille_g = (nx = ..., ny = ..., dim = ...)
 
 #------------------------------------------------------------------------------
 
-# Cette fonction
+# Cette fonction remplit aléatoirement le tableau avec des cellules vivantes (1)
 
 def init(grille):
     nb_cases = grille.nx * grille.ny
-    pourcentage = 0.4 * random() + 0.1
+    pourcentage = 0.4 * random() + 0.1  # 10% à 50% (0.1 à 0.5)
     nb_vivantes = round(pourcentage * nb_cases)
 
     compteur = 0
-    while compteur < nb_vivantes:
+    while compteur < nb_vivantes:    # tant que le nombre de cases vivantes n'est pas atteint
         x = int(random() * grille.nx)
-        y = int(random() * grille.ny)
+        y = int(random() * grille.ny)  # génère un emplacement aléatoire dans le tableau
 
-        if grille.tab[y][x] == 0:
+        if grille.tab[y][x] == 0:  # rend la cellule morte à l'emplacement généré vivante
             grille.tab[y][x] = 1
             compteur += 1
 
     return grille
 
-###
+#------------------------------------------------------------------------------
+
+# Les fonctions lignes, positionner et quadrillage ont été prises de la 
+# diapositive 18 des notes de cours sur tortue pour dessiner une grille
+
 def lignes(nbLignes, pas, largeur):
     for _ in range(nbLignes):
         fd(largeur)
         positionner(-largeur, pas)
     positionner(0, -pas * nbLignes)
 
-###
+
 def positionner(x, y):
     pu(); fd(x); lt(90); fd(y); rt(90); pd()
 
-###
+
 def quadrillage(nx, ny, pas):
     lignes(ny + 1, pas, pas * nx)
     lt(90)
     lignes(nx + 1, -pas, pas * ny)
     rt(90)
 
+#------------------------------------------------------------------------------
 
 def dessiner(grille):
-    clear()
-    ht()
+    clear()  # efface la grille tracé avant (pour la boucle plus tard)
+    ht()  # cache la tortue
 
     dim = grille.dim
     x0 = -grille.nx * dim / 2
     y0 = -grille.ny * dim / 2
 
-    pencolor(1, 0, 0)
-    pensize(dim)
+    pencolor(1, 0, 0)  # rouge
+    pensize(dim)  # trait épaisseur d'une case
     for y in range(grille.ny):
         for x in range(grille.nx):
-            if grille.tab[y][x] == 1:
+            if grille.tab[y][x] == 1:  # trace un carré plein rouge si emplacement d'une cellule vivante
                 pu()
                 goto(x0 + x*dim, y0 + (grille.ny - 1 - y)*dim + dim/2)
                 pd()
                 fd(dim)
 
-    pencolor(0, 0, 0)
-    pensize(1)
+    # Quadrillage
+    pencolor(0, 0, 0)  # noir
+    pensize(1)  # trait de 1 pixel
     pu()
-    goto(x0, y0)
+    goto(x0, y0) # on se positionne au coin inférieur gauche
     pd()
-    quadrillage(grille.nx, grille.ny, dim)
+    quadrillage(grille.nx, grille.ny, dim)  # pas de dim pixels
 
+#------------------------------------------------------------------------------
 
 def suivant(grille):
     futur = creer(struct(nx=grille.nx, ny=grille.ny, dim=grille.dim))
@@ -102,16 +109,22 @@ def suivant(grille):
 
     return futur
 
+#------------------------------------------------------------------------------
 
 def jouer(taille_g, f_aff):
-    grille = creer(taille_g)
-    grille = init(grille)
+    grille = creer(taille_g)  # 1. grille vide
+    grille = init(grille)  # 2. remplir la grille vide aléatoirement avec des 1
 
-    while True:
-        dessiner(grille)
-        futur = suivant(grille)
-        grille = futur
-        sleep(1 / f_aff)
+    repeter = True
+
+    while repeter:
+        dessiner(grille)  # afficher la génération actuelle
+        # gr1 = grille
+        futur = suivant(grille)  # calculer la suivante
+        # if gr1 == futur:  # (Nous aurious ajouté les lignes 121, 123-124 pour arrêter le programme si l'état ne change pas)
+        #    repeter = False
+        grille = futur  # elle devient la génération courante
+        sleep(1/f_aff)  # pause pour que l'animation soit visible
 
 
 
