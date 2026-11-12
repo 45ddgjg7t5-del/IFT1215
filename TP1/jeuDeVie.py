@@ -126,9 +126,8 @@ def suivant(g):
 
     return futur
 
-
+#Boucle principale. f_aff = nombre d'images affichées par seconde.
 def jouer(taille_g, f_aff):
-    """Boucle principale. f_aff = nombre d'images affichées par seconde."""
     g = creer(taille_g)    # 1. grille vide
     g = init(g)            # 2. remplissage aléatoire
 
