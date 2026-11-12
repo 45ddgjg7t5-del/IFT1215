@@ -1,19 +1,23 @@
-#TP 1 - Jeu de vie
-#Jonathan Audet ()
-#Yasser Metnani (20365600)
+# TP 1 - Jeu de vie
+# Jonathan Audet (20373865)
+# Yasser Metnani (20365600)
 
-###
+# Cette fonction retourne un tableau vide (cellules mortes = 0) ainsi que ses dimensions
+
 def creer(taille_g):  #taille_g = (nx = ..., ny = ..., dim = ...)
     tab = []
-    for y in range(taille_g.ny):
+    for y in range(taille_g.ny):  # y est le nombre de lignes
         ligne = []
-        for x in range(taille_g.nx):
-            ligne.append(0)
-        tab.append(ligne)
+        for x in range(taille_g.nx):  # x est le nombre de colonnes
+            ligne.append(0)      # dans chaque ligne, on rajoute x zéros
+        tab.append(ligne)       # on ajourte les lignes dans le tableau
 
     return struct(tab=tab, nx=taille_g.nx, ny=taille_g.ny, dim=taille_g.dim)
 
-###
+#------------------------------------------------------------------------------
+
+# Cette fonction
+
 def init(grille):
     nb_cases = grille.nx * grille.ny
     pourcentage = 0.4 * random() + 0.1
@@ -111,4 +115,4 @@ def jouer(taille_g, f_aff):
 
 
 
-jouer(struct(nx=20, ny=20, dim=10), 10)
+jouer(struct(nx=20, ny=20, dim=10), 10) # 20 x 20 cases, 10 pixels par case, 10 Hz
