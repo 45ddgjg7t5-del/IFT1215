@@ -155,7 +155,7 @@ def jouer(taille_g, f_aff):
         dessiner(grille)  # afficher la génération actuelle
         # gr1 = grille
         futur = suivant(grille)  # calculer la suivante
-        # if gr1 == futur:  # (Nous aurious ajouté les lignes 156, 158-159 pour arrêter le programme si l'état ne change pas)
+        # if gr1 == futur:  # (Nous aurions ajouté les lignes 156, 158-159 pour arrêter le programme si l'état ne change pas)
         #    repeter = False
         grille = futur  # elle devient la génération courante
         sleep(1/f_aff)  # pause pour que l'animation soit visible
