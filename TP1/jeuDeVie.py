@@ -137,6 +137,44 @@ def jouer(taille_g, f_aff):
         g = futur          # elle devient la génération courante
         sleep(1 / f_aff)   # pause pour que l'animation soit visible
 
+# Tests unitaires
+
+def test_creer():
+    g = creer(struct(nx=5, ny=5, dim=10))
+    assert g.grille[0][0] == 0
+    assert g.nx == 5
+    assert g.ny == 5
+
+
+def test_suivant():
+    g = creer(struct(nx=5, ny=5, dim=10))
+
+    # 3 voisins autour d'une cellule morte
+    g.grille[1][1] = 1
+    g.grille[1][2] = 1
+    g.grille[1][3] = 1
+
+    futur = suivant(g)
+
+    # La cellule doit devenir vivante
+    assert futur.grille[2][2] == 1
+
+
+def test_survie():
+    g = creer(struct(nx=5, ny=5, dim=10))
+
+    # Une cellule vivante avec 2 voisins
+    g.grille[2][2] = 1
+    g.grille[1][1] = 1
+    g.grille[1][2] = 1
+
+    futur = suivant(g)
+
+    assert futur.grille[2][2] == 1
+
+test_creer()
+test_suivant()
+test_survie()
 
 #grille 20x20, 10 images par seconde
 jouer(taille_g, 10)
