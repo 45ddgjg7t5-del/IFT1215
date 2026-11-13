@@ -37,7 +37,10 @@ def init(grille):
 
         if grille.tab[y][x] == 0:  # rend la cellule morte à l'emplacement généré vivante
             grille.tab[y][x] = 1
-            compteur += 1
+            compteur += 1     # On compte seulement si la case était morte, on évite
+                              # de compter deux fois la même case et de fausser le total
+
+            
 
     return grille
 
@@ -46,21 +49,21 @@ def init(grille):
 # Les fonctions lignes, positionner et quadrillage ont été prises de la 
 # diapositive 18 des notes de cours sur tortue pour dessiner une grille
 
-def lignes(nbLignes, pas, largeur):
+def lignes(nbLignes, pas, largeur):   # trace nbLignes lignes parallèles, espacées de 'pas', de longueur 'largeur'
     for _ in range(nbLignes):
-        fd(largeur)
-        positionner(-largeur, pas)
-    positionner(0, -pas * nbLignes)
+        fd(largeur)    # trace une ligne
+        positionner(-largeur, pas)  # revient au début et monte d'un cran, sans tracer
+    positionner(0, -pas*nbLignes)   # une fois toutes les lignes tracées, on revient au point de départ
 
 
 def positionner(x, y):
-    pu(); fd(x); lt(90); fd(y); rt(90); pd()
+    pu(); fd(x); lt(90); fd(y); rt(90); pd()   # déplace la tortue de x (devant) et y (côté gauche) SANS tracer
 
 
-def quadrillage(nx, ny, pas):
-    lignes(ny + 1, pas, pas * nx)
+def quadrillage(nx, ny, pas):   # dessine le quadrillage : nx colonnes et ny lignes de cases de côté 'pas'
+    lignes(ny+1, pas, pas*nx)
     lt(90)
-    lignes(nx + 1, -pas, pas * ny)
+    lignes(nx+1, -pas, pas*ny)
     rt(90)
 
 #------------------------------------------------------------------------------
@@ -81,7 +84,10 @@ def dessiner(grille):
         for x in range(grille.nx):
             if grille.tab[y][x] == 1:  # trace un carré plein rouge si emplacement d'une cellule vivante
                 pu()
-                goto(x0 + x*dim, y0 + (grille.ny - 1 - y)*dim + dim/2)
+                goto(x0 + x*dim, y0 + (grille.ny - 1 - y)*dim + dim/2)   # aidés de Claude pour la partie (grille.ny - 1 - y)
+                # on veut commencer au y le plus bas, car la tortue monte
+                # pour tracer le quadrillage donc chaque fois que y augmente, on monte.
+                # dim/2, car l'épaisseur du trait dépasse de chaque côté de la tortue
                 pd()
                 fd(dim)
 
@@ -106,7 +112,7 @@ def compter_voisins(grille, x, y):
                 xv = x + dx  # coordonnée en x du voisin
                 if 0 <= yv < grille.ny and 0 <= xv < grille.nx:  # on vérifie que le voisin est dans la grille
                     total += grille.tab[yv][xv] # pour ajouter seulement les voisins vivants (1), car les voisins morts on la valeur 0
-    return total
+    return total  # nombre de voisins vivants
 
 #------------------------------------------------------------------------------
 
@@ -124,12 +130,13 @@ def etat_suivant(etat, voisins):
 # Cette fonction retourne la grille après les changements
 
 def suivant(grille):
-    futur = creer(struct(nx=grille.nx, ny=grille.ny, dim=grille.dim))
+    futur = creer(struct(nx=grille.nx, ny=grille.ny, dim=grille.dim))  # crée un tableau rempli de zéros avec les 
+                                                                       # mêmes dimensions que la grille actuelle
 
     for y in range(grille.ny):
         for x in range(grille.nx):
-            voisins = compter_voisins(grille, x, y)
-            futur.tab[y][x] = etat_suivant(grille.tab[y][x], voisins)
+            voisins = compter_voisins(grille, x, y)   # compte le nombre de voisins
+            futur.tab[y][x] = etat_suivant(grille.tab[y][x], voisins)  # applique les changements
 
     return futur
 
@@ -148,7 +155,7 @@ def jouer(taille_g, f_aff):
         dessiner(grille)  # afficher la génération actuelle
         # gr1 = grille
         futur = suivant(grille)  # calculer la suivante
-        # if gr1 == futur:  # (Nous aurious ajouté les lignes 121, 123-124 pour arrêter le programme si l'état ne change pas)
+        # if gr1 == futur:  # (Nous aurious ajouté les lignes 156, 158-159 pour arrêter le programme si l'état ne change pas)
         #    repeter = False
         grille = futur  # elle devient la génération courante
         sleep(1/f_aff)  # pause pour que l'animation soit visible
