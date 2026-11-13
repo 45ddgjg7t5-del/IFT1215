@@ -1,4 +1,4 @@
-#Jonathan Audet (20373865) et Yasser Metnani / 12.11 / Jeu de la vie
+#Jonathan Audet (20373865) et Yasser Metnani / 12.11 / Jeu de la vie (regarde tes messages StudiUM)
 
 #Grille : 20 colonnes, 20 lignes, chaque case mesure 10 pixels
 taille_g = struct(nx=20, ny=20, dim=10)
